@@ -1,6 +1,19 @@
 ---
-- name: Join node to Kubernetes control plane.
-  shell: >
-    {{ kubernetes_join_command }}
-    creates=/etc/kubernetes/kubelet.conf
-  tags: ['skip_ansible_lint']
+- name: Check if Kubernetes node has already been initialized.
+  ansible.builtin.stat:
+    path: /etc/kubernetes/kubelet.conf
+  register: kubelet_init_stat
+
+- name: Join node to Kubernetes control plane
+  when: not kubelet_init_stat.stat.exists
+  block:
+    - name: Stop kubelet service
+      ansible.builtin.service: 
+        name: kubelet
+        state: stopped
+
+    - name: Run join command
+      ansible.builtin.shell:
+        cmd: "{{ kubernetes_join_command }}"
+      tags: ["skip_ansible_lint"]
+  
