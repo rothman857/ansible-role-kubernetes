@@ -89,3 +89,8 @@
   when:
     - kubernetes_allow_pods_on_control_plane | bool
     - not kubernetes_init_stat.stat.exists
+
+- name: Enable kubectl completion
+  ansible.builtin.lineinfile:
+    path: /root/.bashrc
+    line: source <(kubectl completion bash)
