@@ -16,4 +16,3 @@
       ansible.builtin.shell:
         cmd: "{{ kubernetes_join_command }}"
       tags: ["skip_ansible_lint"]
-
